@@ -1,0 +1,52 @@
+kind: HiveMetastore
+metadata:
+  name: hive-metastore-xxx
+spec:
+  database:
+    name: "hive_test" # db name in database
+    connection:
+      driver: postgres
+      host:
+      port:
+      credential:
+        existingSecret: "foo"
+
+---
+kind: HiveMetastore
+metadata:
+  name: hive-metastore-yyy
+spec:
+  database:
+    name: "hive_prod"
+    connection:
+      reference: "pg-db-provider-xxx"
+
+---
+kind: HiveMetastore
+metadata:
+  name: hive-metastore-yyy
+spec:
+  database:
+    reference: "hive-db-xxx"
+
+---
+kind: DatabaseConnection
+metadata:
+  name: pg-db-provider-xxx
+spec:
+  privider:
+    driver: postgres
+    host:
+    port:
+    credential:
+      existingSecret: "pg-root"
+
+---
+kind: Database
+metadata:
+  name: hive-db-xxx # database CR name
+spec:
+  name: "hive_prod" # database name in database
+  reference: "pg-db-provider-xxx"
+  credential:
+    existingSecret: "foo"

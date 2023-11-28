@@ -1,0 +1,8 @@
+---
+kind: Trino
+metadata:
+  name: trion-xxx
+spec:
+  authentication:
+    type: "PASSWORD"
+    password: "xxx"

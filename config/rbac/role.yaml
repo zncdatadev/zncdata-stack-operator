@@ -1,0 +1,58 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: manager-role
+rules:
+- apiGroups:
+  - stack.zncdata.net
+  resources:
+  - databaseconnections
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - stack.zncdata.net
+  resources:
+  - databaseconnections/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - stack.zncdata.net
+  resources:
+  - databaseconnections/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - stack.zncdata.net
+  resources:
+  - databases
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - stack.zncdata.net
+  resources:
+  - databases/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - stack.zncdata.net
+  resources:
+  - databases/status
+  verbs:
+  - get
+  - patch
+  - update

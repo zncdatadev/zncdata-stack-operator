@@ -1,0 +1,34 @@
+Kind: Foo
+name: foo-xxx
+spec:
+  redis:
+    host:
+    port:
+    credential:
+      existingSecret: "foo"
+
+---
+Kind: Foo
+name: foo-yyy
+spec:
+  redis:
+    name: "redis-xxx"
+    provider: "redis-provider-xxx"
+
+
+---
+Kind: RedisConnection
+name: redis-provider-xxx
+spec:
+  host:
+  port:
+  credential:
+    existingSecret: "foo"
+
+---
+Kind: Redis
+name: redis-xxx
+spec:
+  provider: "redis-provider-xxx"
+  credential:
+    existingSecret: "foo"

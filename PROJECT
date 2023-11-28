@@ -17,7 +17,16 @@ resources:
   controller: true
   domain: zncdata.net
   group: stack
-  kind: PostgresConnection
+  kind: DatabaseConnection
+  path: github.com/zncdata-labs/zncdata-stack-operator/api/v1alpha1
+  version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: zncdata.net
+  group: stack
+  kind: Database
   path: github.com/zncdata-labs/zncdata-stack-operator/api/v1alpha1
   version: v1alpha1
 version: "3"

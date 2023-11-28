@@ -1,0 +1,47 @@
+kind: Trino
+metadata:
+  name: trion-1
+spec:
+  s3:
+    bucket:
+      name: "trino-test"
+      connection:
+        host:
+        port:
+
+---
+kind: Trino
+metadata:
+  name: trino-2
+spec:
+  s3:
+    bucket:
+      name: "trino-prod"
+      connection:
+        reference: "s3-connection-xxx"
+
+---
+kind: Trion
+metadata:
+  name: trino-3
+spec:
+  s3:
+    bucket:
+      reference: "s3-bucket-xxx"
+
+---
+kiind: S3Connection
+metadata:
+  name: s3-connection-xxx
+spec:
+  host:
+  port:
+
+---
+kind: S3Bucket
+metadata:
+  name: trino-test
+spec:
+  name: "trino-test"
+  connection:
+    reference: "s3-connection-xxx"

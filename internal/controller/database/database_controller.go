@@ -27,26 +27,26 @@ import (
 	stackv1alpha1 "github.com/zncdata-labs/zncdata-stack-operator/api/v1alpha1"
 )
 
-// PostgresConnectionReconciler reconciles a PostgresConnection object
-type PostgresConnectionReconciler struct {
+// DatabaseReconciler reconciles a Database object
+type DatabaseReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups=stack.zncdata.net,resources=postgresconnections,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=stack.zncdata.net,resources=postgresconnections/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=stack.zncdata.net,resources=postgresconnections/finalizers,verbs=update
+//+kubebuilder:rbac:groups=stack.zncdata.net,resources=databases,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=stack.zncdata.net,resources=databases/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=stack.zncdata.net,resources=databases/finalizers,verbs=update
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
 // TODO(user): Modify the Reconcile function to compare the state specified by
-// the PostgresConnection object against the actual cluster state, and then
+// the Database object against the actual cluster state, and then
 // perform operations to make the cluster state reflect the state specified by
 // the user.
 //
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.14.1/pkg/reconcile
-func (r *PostgresConnectionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *DatabaseReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
 	// TODO(user): your logic here
@@ -55,8 +55,8 @@ func (r *PostgresConnectionReconciler) Reconcile(ctx context.Context, req ctrl.R
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *PostgresConnectionReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *DatabaseReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&stackv1alpha1.PostgresConnection{}).
+		For(&stackv1alpha1.Database{}).
 		Complete(r)
 }
