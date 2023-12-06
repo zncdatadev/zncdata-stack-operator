@@ -49,7 +49,9 @@ spec:
                 type: object
               credential:
                 properties:
-                  existSecret:
+                  db_name:
+                    type: string
+                  exist_secret:
                     type: string
                   password:
                     type: string

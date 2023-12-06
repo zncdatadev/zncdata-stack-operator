@@ -34,14 +34,26 @@ kind: S3Connection
 metadata:
   name: s3-connection-xxx
 spec:
-  host:
-  port:
+  credential:
+    existingSecret: "pg-root"
+    endpoint:
+    accessKey:
+    secretKey:
+    region:
+    ssl:
 
+#  Endpoint  string `json:"endpoint,omitempty"`
+#  AccessKey string `json:"access_key,omitempty"`
+#  SecretKey string `json:"secret_key,omitempty"`
+#  Region    string `json:"region,omitempty"`
+#  Token     string `json:"token,omitempty"`
+#  SSL       bool   `json:"ssl,omitempty"`
 ---
 kind: S3Bucket
 metadata:
   name: trino-test
 spec:
   name: "trino-test"
-  connection:
-    reference: "s3-connection-xxx"
+  reference: "s3-connection-xxx"
+  credential:
+    existingSecret: "pg-root"

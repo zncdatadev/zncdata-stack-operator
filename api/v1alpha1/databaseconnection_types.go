@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	apimeta "k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -26,6 +27,7 @@ import (
 // DatabaseConnectionSpec defines the desired state of DatabaseConnection
 type DatabaseConnectionSpec struct {
 	Provider *ProviderSpec `json:"provider,omitempty"`
+	Default  bool          `json:"default,omitempty"`
 }
 
 type ProviderSpec struct {
@@ -39,7 +41,7 @@ type ProviderSpec struct {
 }
 
 type CredentialSpec struct {
-	ExistSecret string `json:"existSecret,omitempty"`
+	ExistSecret string `json:"exist_secret,omitempty"`
 	Username    string `json:"username,omitempty"`
 	Password    string `json:"password,omitempty"`
 }
@@ -73,4 +75,44 @@ type DatabaseConnectionList struct {
 
 func init() {
 	SchemeBuilder.Register(&DatabaseConnection{}, &DatabaseConnectionList{})
+}
+
+// SetStatusCondition updates the status condition using the provided arguments.
+// If the condition already exists, it updates the condition; otherwise, it appends the condition.
+// If the condition status has changed, it updates the condition's LastTransitionTime.
+func (r *DatabaseConnection) SetStatusCondition(condition metav1.Condition) {
+	// if the condition already exists, update it
+	existingCondition := apimeta.FindStatusCondition(r.Status.Conditions, condition.Type)
+	if existingCondition == nil {
+		condition.ObservedGeneration = r.GetGeneration()
+		condition.LastTransitionTime = metav1.Now()
+		r.Status.Conditions = append(r.Status.Conditions, condition)
+	} else if existingCondition.Status != condition.Status || existingCondition.Reason != condition.Reason || existingCondition.Message != condition.Message {
+		existingCondition.Status = condition.Status
+		existingCondition.Reason = condition.Reason
+		existingCondition.Message = condition.Message
+		existingCondition.ObservedGeneration = r.GetGeneration()
+		existingCondition.LastTransitionTime = metav1.Now()
+	}
+}
+
+// InitStatusConditions initializes the status conditions to the provided conditions.
+func (r *DatabaseConnection) InitStatusConditions() {
+	r.Status.Conditions = []metav1.Condition{}
+	r.SetStatusCondition(metav1.Condition{
+		Type:               ConditionTypeProgressing,
+		Status:             metav1.ConditionTrue,
+		Reason:             ConditionReasonPreparing,
+		Message:            "DatabaseConnection is preparing",
+		ObservedGeneration: r.GetGeneration(),
+		LastTransitionTime: metav1.Now(),
+	})
+	r.SetStatusCondition(metav1.Condition{
+		Type:               ConditionTypeAvailable,
+		Status:             metav1.ConditionFalse,
+		Reason:             ConditionReasonPreparing,
+		Message:            "DatabaseConnection is preparing",
+		ObservedGeneration: r.GetGeneration(),
+		LastTransitionTime: metav1.Now(),
+	})
 }

@@ -22,8 +22,8 @@ name: redis-provider-xxx
 spec:
   host:
   port:
-#  credential:
-#    existingSecret: "foo"
+  credential:
+    existingSecret: "foo"
 
 #---
 #Kind: Redis

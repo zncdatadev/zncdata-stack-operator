@@ -17,6 +17,9 @@ type DSN struct {
 }
 
 func (d *DSN) mysqlString() string {
+	if d.Database == "" {
+		d.Database = "mysql"
+	}
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", d.Username, d.Password, d.Host, d.Port, d.Database)
 	return dsn
 }
@@ -66,6 +69,7 @@ type IDBInitializer interface {
 	dropDatabase(dbname string) error
 	dropUser(username string) error
 	setConnection(conn *sql.DB)
+	ping() error
 }
 
 type DBInitializer struct {
@@ -94,6 +98,10 @@ func (d *DBInitializer) setConnection(conn *sql.DB) {
 	d.conn = conn
 }
 
+func (d *DBInitializer) ping() error {
+	return d.conn.Ping()
+}
+
 func NewDBInitializer(dsn *DSN) (IDBInitializer, error) {
 
 	var initializer IDBInitializer
@@ -110,11 +118,6 @@ func NewDBInitializer(dsn *DSN) (IDBInitializer, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = db.Ping()
-	if err != nil {
-		return nil, err
-	}
-
 	initializer.setConnection(db)
 
 	return initializer, nil
@@ -133,6 +136,7 @@ type PostgresInitializer struct {
 }
 
 func (d *PostgresInitializer) initDatabase(username string, dbname string) error {
+	// 查询数据库是否已经存在
 	_, err := d.conn.Exec("CREATE DATABASE " + dbname + " OWNER " + username)
 	if err != nil {
 		return err

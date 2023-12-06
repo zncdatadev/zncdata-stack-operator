@@ -5,6 +5,18 @@ metadata:
   name: manager-role
 rules:
 - apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
   - stack.zncdata.net
   resources:
   - databaseconnections
@@ -52,6 +64,84 @@ rules:
   - stack.zncdata.net
   resources:
   - databases/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - stack.zncdata.net
+  resources:
+  - redisconnections
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - stack.zncdata.net
+  resources:
+  - redisconnections/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - stack.zncdata.net
+  resources:
+  - redisconnections/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - stack.zncdata.net
+  resources:
+  - s3buckets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - stack.zncdata.net
+  resources:
+  - s3buckets/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - stack.zncdata.net
+  resources:
+  - s3buckets/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - stack.zncdata.net
+  resources:
+  - s3connections
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - stack.zncdata.net
+  resources:
+  - s3connections/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - stack.zncdata.net
+  resources:
+  - s3connections/status
   verbs:
   - get
   - patch
