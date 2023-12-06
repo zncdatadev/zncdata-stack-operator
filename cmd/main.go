@@ -18,6 +18,8 @@ package main
 
 import (
 	"flag"
+	"github.com/zncdata-labs/zncdata-stack-operator/internal/controller/redis"
+	"github.com/zncdata-labs/zncdata-stack-operator/internal/controller/s3"
 	"os"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
@@ -99,6 +101,27 @@ func main() {
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Database")
+		os.Exit(1)
+	}
+	if err = (&s3.S3ConnectionReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "S3Connection")
+		os.Exit(1)
+	}
+	if err = (&s3.S3BucketReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "S3Bucket")
+		os.Exit(1)
+	}
+	if err = (&redis.RedisConnectionReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "RedisConnection")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder

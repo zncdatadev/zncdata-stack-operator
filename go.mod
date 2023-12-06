@@ -4,14 +4,44 @@ go 1.19
 
 require (
 	github.com/joho/godotenv v1.5.1
+	github.com/minio/madmin-go/v3 v3.0.35
+	github.com/minio/minio-go/v7 v7.0.65
 	github.com/onsi/ginkgo/v2 v2.13.0
 	github.com/onsi/gomega v1.29.0
+	github.com/redis/go-redis/v9 v9.3.0
 	k8s.io/apimachinery v0.28.3
 	k8s.io/client-go v0.28.3
 	sigs.k8s.io/controller-runtime v0.16.3
 )
 
-require github.com/pmezard/go-difflib v1.0.0 // indirect
+require (
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/dustin/go-humanize v1.0.1 // indirect
+	github.com/go-ole/go-ole v1.2.6 // indirect
+	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
+	github.com/klauspost/compress v1.16.7 // indirect
+	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
+	github.com/lufia/plan9stats v0.0.0-20230110061619-bbe2e5e100de // indirect
+	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
+	github.com/minio/md5-simd v1.1.2 // indirect
+	github.com/minio/sha256-simd v1.0.1 // indirect
+	github.com/philhofer/fwd v1.1.2 // indirect
+	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
+	github.com/power-devops/perfstat v0.0.0-20221212215047-62379fc7944b // indirect
+	github.com/prometheus/prom2json v1.3.3 // indirect
+	github.com/rs/xid v1.5.0 // indirect
+	github.com/safchain/ethtool v0.3.0 // indirect
+	github.com/secure-io/sio-go v0.3.1 // indirect
+	github.com/shirou/gopsutil/v3 v3.23.1 // indirect
+	github.com/sirupsen/logrus v1.9.3 // indirect
+	github.com/tinylib/msgp v1.1.8 // indirect
+	github.com/tklauser/go-sysconf v0.3.11 // indirect
+	github.com/tklauser/numcpus v0.6.0 // indirect
+	github.com/yusufpapurcu/wmi v1.2.2 // indirect
+	golang.org/x/crypto v0.14.0 // indirect
+	golang.org/x/sync v0.4.0 // indirect
+	gopkg.in/ini.v1 v1.67.0 // indirect
+)
 
 replace github.com/onsi/ginkgo/v2 => github.com/onsi/ginkgo/v2 v2.12.0
 

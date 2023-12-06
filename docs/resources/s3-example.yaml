@@ -30,7 +30,7 @@ spec:
       reference: "s3-bucket-xxx"
 
 ---
-kiind: S3Connection
+kind: S3Connection
 metadata:
   name: s3-connection-xxx
 spec:

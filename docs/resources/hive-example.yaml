@@ -34,7 +34,7 @@ kind: DatabaseConnection
 metadata:
   name: pg-db-provider-xxx
 spec:
-  privider:
+  provider:
     driver: postgres
     host:
     port:

@@ -29,4 +29,31 @@ resources:
   kind: Database
   path: github.com/zncdata-labs/zncdata-stack-operator/api/v1alpha1
   version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: zncdata.net
+  group: stack
+  kind: S3Connection
+  path: github.com/zncdata-labs/zncdata-stack-operator/api/v1alpha1
+  version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: zncdata.net
+  group: stack
+  kind: S3Bucket
+  path: github.com/zncdata-labs/zncdata-stack-operator/api/v1alpha1
+  version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: zncdata.net
+  group: stack
+  kind: RedisConnection
+  path: github.com/zncdata-labs/zncdata-stack-operator/api/v1alpha1
+  version: v1alpha1
 version: "3"

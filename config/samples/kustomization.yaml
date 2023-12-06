@@ -2,4 +2,7 @@
 resources:
 - stack_v1alpha1_databaseconnection.yaml
 - stack_v1alpha1_database.yaml
+- stack_v1alpha1_s3connection.yaml
+- stack_v1alpha1_s3bucket.yaml
+- stack_v1alpha1_redisconnection.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples
