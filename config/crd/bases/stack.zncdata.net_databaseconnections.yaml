@@ -41,11 +41,7 @@ spec:
                 properties:
                   credential:
                     properties:
-                      exist_secret:
-                        type: string
-                      password:
-                        type: string
-                      username:
+                      existingSecret:
                         type: string
                     type: object
                   driver:

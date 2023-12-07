@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	apimeta "k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -28,8 +29,9 @@ type RedisConnectionSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	Host string `json:"host,omitempty"`
-	Port string `json:"port,omitempty"`
+	Host     string `json:"host,omitempty"`
+	Port     string `json:"port,omitempty"`
+	Password string `json:"password,omitempty"`
 }
 
 // RedisConnectionStatus defines the observed state of RedisConnection
@@ -48,6 +50,49 @@ type RedisConnection struct {
 
 	Spec   RedisConnectionSpec   `json:"spec,omitempty"`
 	Status RedisConnectionStatus `json:"status,omitempty"`
+}
+
+func (r *RedisConnection) SetStatusCondition(condition metav1.Condition) {
+	// if the condition already exists, update it
+	existingCondition := apimeta.FindStatusCondition(r.Status.Conditions, condition.Type)
+	if existingCondition == nil {
+		condition.ObservedGeneration = r.GetGeneration()
+		condition.LastTransitionTime = metav1.Now()
+		r.Status.Conditions = append(r.Status.Conditions, condition)
+	} else if existingCondition.Status != condition.Status || existingCondition.Reason != condition.Reason || existingCondition.Message != condition.Message {
+		existingCondition.Status = condition.Status
+		existingCondition.Reason = condition.Reason
+		existingCondition.Message = condition.Message
+		existingCondition.ObservedGeneration = r.GetGeneration()
+		existingCondition.LastTransitionTime = metav1.Now()
+	}
+}
+
+func (r *RedisConnection) IsAvailable() bool {
+	if cond := apimeta.FindStatusCondition(r.Status.Conditions, ConditionTypeAvailable); cond != nil && cond.Status == metav1.ConditionTrue && string(cond.Status) == ConditionReasonRunning {
+		return true
+	}
+	return false
+}
+
+func (r *RedisConnection) InitStatusConditions() {
+	r.Status.Conditions = []metav1.Condition{}
+	r.SetStatusCondition(metav1.Condition{
+		Type:               ConditionTypeProgressing,
+		Status:             metav1.ConditionTrue,
+		Reason:             ConditionReasonPreparing,
+		Message:            "redisConnection is preparing",
+		ObservedGeneration: r.GetGeneration(),
+		LastTransitionTime: metav1.Now(),
+	})
+	r.SetStatusCondition(metav1.Condition{
+		Type:               ConditionTypeAvailable,
+		Status:             metav1.ConditionFalse,
+		Reason:             ConditionReasonPreparing,
+		Message:            "redisConnection is preparing",
+		ObservedGeneration: r.GetGeneration(),
+		LastTransitionTime: metav1.Now(),
+	})
 }
 
 //+kubebuilder:object:root=true

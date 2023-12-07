@@ -36,6 +36,8 @@ spec:
             properties:
               host:
                 type: string
+              password:
+                type: string
               port:
                 type: string
             type: object

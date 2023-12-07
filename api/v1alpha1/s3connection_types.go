@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	apimeta "k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -27,15 +28,24 @@ import (
 type S3ConnectionSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	// +kubebuilder:validation:Required
+	S3Credential *S3Credential `json:"credential,omitempty"`
+}
 
-	// Foo is an example field of S3Connection. Edit s3connection_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+type S3Credential struct {
+	// +kubebuilder:validation:Optional
+	ExistingSecret string `json:"existingSecret,omitempty"`
+	AccessKey      string `json:"accessKey,omitempty"`
+	SecretKey      string `json:"secretKey,omitempty"`
+	Endpoint       string `json:"endpoint,omitempty"`
+	Region         string `json:"region,omitempty"`
+	SSL            bool   `json:"ssl,omitempty"`
 }
 
 // S3ConnectionStatus defines the observed state of S3Connection
 type S3ConnectionStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// +kubebuilder:validation:Optional
+	Conditions []metav1.Condition `json:"condition,omitempty"`
 }
 
 //+kubebuilder:object:root=true
@@ -48,6 +58,49 @@ type S3Connection struct {
 
 	Spec   S3ConnectionSpec   `json:"spec,omitempty"`
 	Status S3ConnectionStatus `json:"status,omitempty"`
+}
+
+func (s *S3Connection) SetStatusCondition(condition metav1.Condition) {
+	// if the condition already exists, update it
+	existingCondition := apimeta.FindStatusCondition(s.Status.Conditions, condition.Type)
+	if existingCondition == nil {
+		condition.ObservedGeneration = s.GetGeneration()
+		condition.LastTransitionTime = metav1.Now()
+		s.Status.Conditions = append(s.Status.Conditions, condition)
+	} else if existingCondition.Status != condition.Status || existingCondition.Reason != condition.Reason || existingCondition.Message != condition.Message {
+		existingCondition.Status = condition.Status
+		existingCondition.Reason = condition.Reason
+		existingCondition.Message = condition.Message
+		existingCondition.ObservedGeneration = s.GetGeneration()
+		existingCondition.LastTransitionTime = metav1.Now()
+	}
+}
+
+func (s *S3Connection) IsAvailable() bool {
+	if cond := apimeta.FindStatusCondition(s.Status.Conditions, ConditionTypeAvailable); cond != nil && cond.Status == metav1.ConditionTrue && string(cond.Status) == ConditionReasonRunning {
+		return true
+	}
+	return false
+}
+
+func (s *S3Connection) InitStatusConditions() {
+	s.Status.Conditions = []metav1.Condition{}
+	s.SetStatusCondition(metav1.Condition{
+		Type:               ConditionTypeProgressing,
+		Status:             metav1.ConditionTrue,
+		Reason:             ConditionReasonPreparing,
+		Message:            "s3Connection is preparing",
+		ObservedGeneration: s.GetGeneration(),
+		LastTransitionTime: metav1.Now(),
+	})
+	s.SetStatusCondition(metav1.Condition{
+		Type:               ConditionTypeAvailable,
+		Status:             metav1.ConditionFalse,
+		Reason:             ConditionReasonPreparing,
+		Message:            "s3Connection is preparing",
+		ObservedGeneration: s.GetGeneration(),
+		LastTransitionTime: metav1.Now(),
+	})
 }
 
 //+kubebuilder:object:root=true

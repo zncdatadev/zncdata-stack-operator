@@ -25,9 +25,15 @@ const DatabaseFinalizer = "database.finalizers.stack.zncdata.net"
 
 // DatabaseSpec defines the desired state of Database
 type DatabaseSpec struct {
-	Name       string          `json:"name,omitempty"`
-	Reference  string          `json:"reference,omitempty"`
-	Credential *CredentialSpec `json:"credential,omitempty"`
+	Name       string                  `json:"name,omitempty"`
+	Reference  string                  `json:"reference,omitempty"`
+	Credential *DatabaseCredentialSpec `json:"credential,omitempty"`
+}
+
+type DatabaseCredentialSpec struct {
+	ExistSecret string `json:"existingSecret,omitempty"`
+	Username    string `json:"username,omitempty"`
+	Password    string `json:"password,omitempty"`
 }
 
 // DatabaseStatus defines the observed state of Database

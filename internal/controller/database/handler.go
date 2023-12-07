@@ -59,9 +59,6 @@ func getDSNFromConnection(ctx context.Context, c client.Client, instance *stackv
 			}
 			dsn.Password = string(decodeString)
 		}
-	} else {
-		dsn.Username = provider.Credential.Username
-		dsn.Password = provider.Credential.Password
 	}
 	return dsn, nil
 }

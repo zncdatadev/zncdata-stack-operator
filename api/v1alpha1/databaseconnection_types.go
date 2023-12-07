@@ -33,17 +33,15 @@ type DatabaseConnectionSpec struct {
 type ProviderSpec struct {
 	// +kubebuilder:validation:Enum=mysql;postgres
 	// +kubebulider:default=postgres
-	Driver     string          `json:"driver,omitempty"`
-	Host       string          `json:"host,omitempty"`
-	Port       int             `json:"port,omitempty"`
-	SSL        bool            `json:"ssl,omitempty"`
-	Credential *CredentialSpec `json:"credential,omitempty"`
+	Driver     string                            `json:"driver,omitempty"`
+	Host       string                            `json:"host,omitempty"`
+	Port       int                               `json:"port,omitempty"`
+	SSL        bool                              `json:"ssl,omitempty"`
+	Credential *DatabaseConnectionCredentialSpec `json:"credential,omitempty"`
 }
 
-type CredentialSpec struct {
-	ExistSecret string `json:"exist_secret,omitempty"`
-	Username    string `json:"username,omitempty"`
-	Password    string `json:"password,omitempty"`
+type DatabaseConnectionCredentialSpec struct {
+	ExistSecret string `json:"existingSecret,omitempty"`
 }
 
 // DatabaseConnectionStatus defines the observed state of DatabaseConnection
