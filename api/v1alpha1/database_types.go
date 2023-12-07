@@ -69,7 +69,7 @@ func (in *Database) SetStatusCondition(condition metav1.Condition) {
 }
 
 func (in *Database) IsAvailable() bool {
-	if apimeta.FindStatusCondition(in.Status.Conditions, ConditionTypeAvailable) != nil {
+	if cond := apimeta.FindStatusCondition(in.Status.Conditions, ConditionTypeAvailable); cond != nil && cond.Status == metav1.ConditionTrue && string(cond.Status) == ConditionReasonRunning {
 		return true
 	}
 	return false

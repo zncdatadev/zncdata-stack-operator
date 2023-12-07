@@ -116,3 +116,10 @@ func (r *DatabaseConnection) InitStatusConditions() {
 		LastTransitionTime: metav1.Now(),
 	})
 }
+
+func (r *DatabaseConnection) IsAvailable() bool {
+	if cond := apimeta.FindStatusCondition(r.Status.Conditions, ConditionTypeAvailable); cond != nil && cond.Status == metav1.ConditionTrue && string(cond.Status) == ConditionReasonRunning {
+		return true
+	}
+	return false
+}

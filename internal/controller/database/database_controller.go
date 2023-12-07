@@ -18,6 +18,7 @@ package controller
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"github.com/go-logr/logr"
 	stackv1alpha1 "github.com/zncdata-labs/zncdata-stack-operator/api/v1alpha1"
@@ -30,6 +31,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"strings"
 )
 
 // DatabaseReconciler reconciles a Database object
@@ -104,6 +106,9 @@ func (r *DatabaseReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		}
 	}
 
+	if obj.IsAvailable() {
+		return ctrl.Result{}, nil
+	}
 	obj.SetStatusCondition(metav1.Condition{
 		Type:               stackv1alpha1.ConditionTypeAvailable,
 		Status:             metav1.ConditionTrue,
@@ -153,15 +158,12 @@ func (r *DatabaseReconciler) getReferenceDatabaseConnection(ctx context.Context,
 
 func (r *DatabaseReconciler) generateDatabaseSecret(ctx context.Context, obj *stackv1alpha1.Database, connection *stackv1alpha1.DatabaseConnection) error {
 	// 如果可用,或者要删除了,就不再创建
-	if obj.IsAvailable() || obj.GetDeletionTimestamp() != nil {
+	if obj.IsAvailable() || obj.GetDeletionTimestamp() != nil || controllerutil.ContainsFinalizer(obj, stackv1alpha1.DatabaseFinalizer) {
 		return nil
 	}
 	dbName := obj.Spec.Name
-	username := obj.GetName() + util.GenerateRandomStr(5)
-	password, err := util.GenerateSecretAccessKey()
-	if err != nil {
-		return err
-	}
+	username := strings.ToLower(util.RemoveSpecialCharacter(obj.GetName() + util.GenerateRandomStr(5)))
+	password := util.GenerateRandomStr(10)
 	dsn, err := getDSNFromConnection(ctx, r.Client, connection)
 	if err != nil {
 		return err
@@ -186,7 +188,7 @@ func (r *DatabaseReconciler) generateDatabaseSecret(ctx context.Context, obj *st
 		Driver:   dsn.Driver,
 		SSLMode:  dsn.SSLMode,
 		Username: username,
-		Password: dsn.Password,
+		Password: password,
 		Database: dbName,
 	}
 
@@ -249,7 +251,14 @@ func (r *DatabaseReconciler) finalizeDatabase(ctx context.Context, obj *stackv1a
 		if err != nil {
 			return err
 		}
-		username = string(secret.Data["username"])
+		if ub, ok := secret.Data["username"]; ok {
+			decodeString, err := base64.StdEncoding.DecodeString(string(ub))
+			if err != nil {
+				return err
+			}
+			username = string(decodeString)
+		}
+
 		err = r.Delete(ctx, secret)
 		if err != nil {
 			return err

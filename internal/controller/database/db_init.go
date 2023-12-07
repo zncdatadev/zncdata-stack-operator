@@ -3,6 +3,8 @@ package controller
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 	"strings"
 )
 
@@ -137,16 +139,30 @@ type PostgresInitializer struct {
 
 func (d *PostgresInitializer) initDatabase(username string, dbname string) error {
 	// 查询数据库是否已经存在
-	_, err := d.conn.Exec("CREATE DATABASE " + dbname + " OWNER " + username)
+
+	query := "SELECT count(*) FROM pg_database WHERE datname = $1"
+	var count int
+	err := d.conn.QueryRow(query, dbname).Scan(&count)
 	if err != nil {
 		return err
 	}
+
+	// 判断数据库是否存在
+	if count == 0 {
+		_, err := d.conn.Exec("CREATE DATABASE " + dbname)
+		if err != nil {
+			return err
+		}
+	}
+
 	_, err = d.conn.Exec("GRANT ALL PRIVILEGES ON DATABASE " + dbname + " TO " + username)
 	return err
 }
 
 func (d *PostgresInitializer) initUser(username string, password string) error {
-	_, err := d.conn.Exec("CREATE USER " + username + " WITH PASSWORD '" + password + "'")
+	execSql := "CREATE USER " + username + " WITH PASSWORD '" + password + "'"
+	_, err := d.conn.Exec(execSql)
+
 	return err
 }
 
@@ -155,9 +171,21 @@ type MySQLInitializer struct {
 }
 
 func (d *MySQLInitializer) initDatabase(username string, dbname string) error {
-	_, err := d.conn.Exec("CREATE DATABASE " + dbname)
+
+	query := fmt.Sprintf("SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s'", dbname)
+	var count int
+	err := d.conn.QueryRow(query).Scan(&count)
 	if err != nil {
 		return err
+	}
+	// 判断数据库是否存在
+	if count > 0 {
+		fmt.Println("数据库已存在")
+	} else {
+		_, err := d.conn.Exec("CREATE DATABASE " + dbname)
+		if err != nil {
+			return err
+		}
 	}
 	_, err = d.conn.Exec("GRANT ALL PRIVILEGES ON " + dbname + ".* TO " + username)
 	return err

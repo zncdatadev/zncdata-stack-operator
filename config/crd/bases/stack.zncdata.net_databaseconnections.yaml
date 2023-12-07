@@ -41,8 +41,6 @@ spec:
                 properties:
                   credential:
                     properties:
-                      db_name:
-                        type: string
                       exist_secret:
                         type: string
                       password:

@@ -1,0 +1,18 @@
+apiVersion: stack.zncdata.net/v1alpha1
+kind: Database
+metadata:
+  labels:
+    app.kubernetes.io/name: database
+    app.kubernetes.io/instance: database-sample
+    app.kubernetes.io/part-of: zncdata-stack-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: zncdata-stack-operator
+  name: database-sample
+spec:
+  name: test-db1
+  reference: databaseconnection-sample
+  credential:
+    username: zhangsan
+    password: zhangsan
+
+  # TODO(user): Add fields here

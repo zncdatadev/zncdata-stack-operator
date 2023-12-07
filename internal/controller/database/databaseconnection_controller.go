@@ -91,11 +91,16 @@ func (r *DatabaseConnectionReconciler) Reconcile(ctx context.Context, req ctrl.R
 			r.Log.Error(err, "Failed to update status")
 			return ctrl.Result{}, err
 		}
+		return ctrl.Result{}, err
 	}
 
 	if err := r.checkConnection(ctx, databaseConnection); err != nil {
 		r.Log.Error(err, "Failed to check connection")
 		return ctrl.Result{}, err
+	}
+
+	if databaseConnection.IsAvailable() {
+		return ctrl.Result{}, nil
 	}
 
 	databaseConnection.SetStatusCondition(metav1.Condition{
@@ -147,8 +152,10 @@ func (r *DatabaseConnectionReconciler) checkDefault(ctx context.Context, connect
 	if err != nil {
 		return err
 	}
-	for _, item := range list.Items {
-		if item.Spec.Default && item.Name != connection.Name {
+	for _, item := range list.Items { // 同一个driver类型的default只能有一个
+		if item.Spec.Default &&
+			item.Name != connection.Name &&
+			item.Spec.Provider.Driver == connection.Spec.Provider.Driver {
 			return errors.New("default connection already exists")
 		}
 	}

@@ -18,7 +18,8 @@ func NewConfigFromEnv() *Config {
 }
 func NewLocalConfig() *Config {
 	return &Config{
-		Addr: "36.26.69.28:16379",
+		Addr:     "127.0.0.1:6379",
+		Password: "123456",
 	}
 }
 
