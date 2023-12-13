@@ -97,6 +97,13 @@ func (mi *MinioInitializer) createUser(ctx context.Context, s3Config *Config) er
 }
 
 func (mi *MinioInitializer) createBucket(ctx context.Context, bucketName, region string) error {
+	exists, err := mi.client.BucketExists(ctx, bucketName)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return nil
+	}
 	return mi.client.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{Region: region})
 }
 

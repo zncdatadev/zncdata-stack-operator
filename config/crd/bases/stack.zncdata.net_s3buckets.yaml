@@ -39,6 +39,8 @@ spec:
                   existingSecret:
                     type: string
                 type: object
+              name:
+                type: string
               reference:
                 description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
                   Important: Run "make" to regenerate code after modifying this file'

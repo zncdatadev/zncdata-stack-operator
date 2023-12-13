@@ -150,12 +150,15 @@ func (r *S3BucketReconciler) UpdateStatus(ctx context.Context, instance *stackv1
 
 func (r *S3BucketReconciler) CreateBucket(ctx context.Context, s3bucket *stackv1alpha1.S3Bucket) error {
 	// 如果可用,或者要删除了,就不再创建
-	if s3bucket.IsAvailable() || s3bucket.GetDeletionTimestamp() != nil || controllerutil.ContainsFinalizer(s3bucket, stackv1alpha1.DatabaseFinalizer) {
+	if s3bucket.IsAvailable() || s3bucket.GetDeletionTimestamp() != nil || controllerutil.ContainsFinalizer(s3bucket, stackv1alpha1.S3BucketFinalizer) {
 		return nil
 	}
-	if s3bucket.Spec.Credential != nil && s3bucket.Spec.Credential.ExistingSecret != "" {
+	if s3bucket.Spec.Reference != "" {
+		if s3bucket.Spec.Name == "" {
+			return errors.New("bucket name is empty")
+		}
 		s3Connection := &stackv1alpha1.S3Connection{}
-		err := r.Get(ctx, client.ObjectKey{Namespace: s3bucket.Namespace, Name: s3bucket.Spec.Credential.ExistingSecret}, s3Connection)
+		err := r.Get(ctx, client.ObjectKey{Namespace: s3bucket.Namespace, Name: s3bucket.Spec.Reference}, s3Connection)
 		if err != nil {
 			return err
 		}
@@ -168,21 +171,18 @@ func (r *S3BucketReconciler) CreateBucket(ctx context.Context, s3bucket *stackv1
 			return err
 		}
 
-		if s3bucket.Spec.Name == "" {
-			return errors.New("bucket name is empty")
-		}
-
 		accessKey := fmt.Sprintf("%s%s", s3bucket.Name, util.GenerateRandomStr(5))
 		secretKey := util.GenerateRandomStr(10)
-
+		bucketName := s3bucket.Spec.Name
+		policyName := fmt.Sprintf("zncdata_%s_%s", accessKey, bucketName)
 		newUserConfig := &Config{
 			Endpoint:  adminConfig.Endpoint,
 			AccessKey: accessKey,
 			SecretKey: secretKey,
 			Region:    adminConfig.Region,
-			Token:     "",
 			SSL:       adminConfig.SSL,
 		}
+
 		err = initializer.createBucket(ctx, s3bucket.Spec.Name, adminConfig.Region)
 		if err != nil {
 			return err
@@ -191,19 +191,33 @@ func (r *S3BucketReconciler) CreateBucket(ctx context.Context, s3bucket *stackv1
 		if err != nil {
 			return err
 		}
-		err = initializer.bindPolicy(ctx, accessKey, s3bucket.Spec.Name)
+		err = initializer.createUserPolicy(ctx, policyName, accessKey, bucketName)
 		if err != nil {
 			return err
 		}
-		secret := &corev1.Secret{}
-		secret.Name = fmt.Sprintf("%s-secret", s3bucket.Name)
-		secret.Data["accessKey"] = []byte(accessKey)
-		secret.Data["secretKey"] = []byte(secretKey)
-		err = r.Create(ctx, secret)
+		err = initializer.bindPolicy(ctx, accessKey, policyName)
 		if err != nil {
 			return err
 		}
-		s3bucket.Spec.Credential.ExistingSecret = secretKey
+		sData := make(map[string][]byte)
+		sData["accessKey"] = []byte(accessKey)
+		sData["secretKey"] = []byte(secretKey)
+
+		secret := &corev1.Secret{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      fmt.Sprintf("%s-secret", s3bucket.Name),
+				Namespace: s3Connection.Namespace,
+			},
+			Type: corev1.SecretTypeOpaque,
+			Data: sData,
+		}
+		err = util.CreateOrUpdate(ctx, r.Client, secret)
+		if err != nil {
+			return err
+		}
+		s3bucket.Spec.Credential = &stackv1alpha1.S3BucketCredential{
+			ExistingSecret: secretKey,
+		}
 		err = r.Update(ctx, s3bucket)
 		if err != nil {
 			return err

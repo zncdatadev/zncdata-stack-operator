@@ -31,7 +31,7 @@ type S3BucketSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 	// +kubebuilder:validation:Required
-	reference string `json:"reference,omitempty"`
+	Reference string `json:"reference,omitempty"`
 	// +kubebuilder:validation:Optional
 	Credential *S3BucketCredential `json:"credential,omitempty"`
 	Name       string              `json:"name,omitempty"`
