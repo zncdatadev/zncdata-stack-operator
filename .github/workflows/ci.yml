@@ -103,13 +103,16 @@ jobs:
 
       minio:
         # fixme: let's not depend on external unofficial image
-        image: lazybit/minio
+        image: minio/minio
         ports:
           - 9000:9000
         env:
-          MINIO_ROOT_USER: accesskey
-          MINIO_ROOT_PASSWORD: password
-        options: --name=minio --health-cmd "curl http://localhost:9000/minio/health/live"
+          MINIO_ROOT_USER: admin
+          MINIO_ROOT_PASSWORD: admin123456
+        options: >-
+          --name=minio
+          --health-cmd "curl http://localhost:9000/minio/health/live"
+          --command "server /data --console-address ':9090' --address ':9000'"
 
     steps:
       - name: Checkout Code
@@ -141,6 +144,6 @@ jobs:
 
           # The hostname used to communicate with the Minio service container
           MINIO_ENDPOINT: "localhost:9000"
-          MINIO_ACCESS_KEY: "accesskey"
-          MINIO_SECRET_KEY: "password"
+          MINIO_ACCESS_KEY: "admin"
+          MINIO_SECRET_KEY: "admin123456"
           MINIO_SSL: "false"
