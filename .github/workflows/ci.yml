@@ -106,6 +106,9 @@ jobs:
         image: minio/minio
         ports:
           - 9000:9000
+          - 9090:9090
+        volumes:
+          - minio-data:/data
         env:
           MINIO_ROOT_USER: admin
           MINIO_ROOT_PASSWORD: admin123456
