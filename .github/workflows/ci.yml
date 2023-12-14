@@ -137,7 +137,7 @@ jobs:
           MYSQL_DB_HOST: "localhost"
           MYSQL_DB_PORT: "33306"
           MYSQL_DB_SSLMODE: "false"
-          MYSQL_DB_USERNAME: "mysql"
+          MYSQL_DB_USERNAME: "root"
           MYSQL_DB_PASSWORD: "mysql"
 
           # The hostname used to communicate with the Minio service container
