@@ -110,8 +110,6 @@ jobs:
           MINIO_ROOT_USER: admin
           MINIO_ROOT_PASSWORD: admin123456
         options: >-
-          --name=minio
-          --health-cmd "curl http://localhost:9000/minio/health/live"
           - server
           - /data
           - --console-address
