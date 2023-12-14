@@ -109,8 +109,9 @@ jobs:
         env:
           MINIO_ROOT_USER: admin
           MINIO_ROOT_PASSWORD: admin123456
-        options: >-
-          server /data --console-address ":9090" --address ":9000"
+        steps:
+          - run: |
+              server /data --console-address ":9090" --address ":9000"
 
     steps:
       - name: Checkout Code
