@@ -39,8 +39,13 @@ import (
 )
 
 var (
-	scheme   = runtime.NewScheme()
-	setupLog = ctrl.Log.WithName("setup")
+	scheme                          = runtime.NewScheme()
+	setupLog                        = ctrl.Log.WithName("setup")
+	s3BucketReconcilerLog           = ctrl.Log.WithName("s3bucket-reconcilier")
+	s3ConnectionReconcilerLog       = ctrl.Log.WithName("s3-connection-reconcilier")
+	redisConnectionReconcilerLog    = ctrl.Log.WithName("redis-connection-reconcilier")
+	databaseConnectionReconcilerLog = ctrl.Log.WithName("database-connection-reconcilier")
+	databaseReconcilerLog           = ctrl.Log.WithName("database-reconcilier")
 )
 
 func init() {
@@ -92,6 +97,7 @@ func main() {
 	if err = (&dbController.DatabaseConnectionReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
+		Log:    databaseConnectionReconcilerLog,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "DatabaseConnection")
 		os.Exit(1)
@@ -99,6 +105,7 @@ func main() {
 	if err = (&dbController.DatabaseReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
+		Log:    databaseReconcilerLog,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Database")
 		os.Exit(1)
@@ -106,6 +113,7 @@ func main() {
 	if err = (&s3.S3ConnectionReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
+		Log:    s3ConnectionReconcilerLog,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "S3Connection")
 		os.Exit(1)
@@ -113,6 +121,7 @@ func main() {
 	if err = (&s3.S3BucketReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
+		Log:    s3BucketReconcilerLog,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "S3Bucket")
 		os.Exit(1)
@@ -120,6 +129,7 @@ func main() {
 	if err = (&redis.RedisConnectionReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
+		Log:    redisConnectionReconcilerLog,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "RedisConnection")
 		os.Exit(1)
