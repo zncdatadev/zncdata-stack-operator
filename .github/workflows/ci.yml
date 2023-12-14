@@ -112,7 +112,12 @@ jobs:
         options: >-
           --name=minio
           --health-cmd "curl http://localhost:9000/minio/health/live"
-          --command "server /data --console-address ':9090' --address ':9000'"
+          - server
+          - /data
+          - --console-address
+          - ':9090'
+          - --address
+          - ':9000'
 
     steps:
       - name: Checkout Code
