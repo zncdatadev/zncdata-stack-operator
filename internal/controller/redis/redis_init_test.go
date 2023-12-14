@@ -23,6 +23,14 @@ func NewLocalConfig() *Config {
 	}
 }
 
+func getRedisConfig() *Config {
+	getenv := os.Getenv("ENV")
+	if getenv == "local" {
+		return NewLocalConfig()
+	}
+	return NewConfigFromEnv()
+}
+
 func TestNewRDBClient(t *testing.T) {
 	//env := NewConfigFromEnv()
 	env := NewLocalConfig()

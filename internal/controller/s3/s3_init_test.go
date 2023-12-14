@@ -11,7 +11,10 @@ import (
 
 // NewDefaultConfig minio 官网提供的配置
 func NewDefaultConfig() *Config {
-
+	getenv := os.Getenv("ENV")
+	if getenv == "local" {
+		return NewLocalConfig()
+	}
 	return NewConfigFromEnv()
 }
 
@@ -50,29 +53,11 @@ func TestNewClient(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	//policy, err := client.GetBucketPolicy(ctx, "00000qweqwe")
-	//if err != nil {
-	//	return
-	//}
-	//t.Log("get bucket policy", "policy: ", policy)
 	buckets, err := client.ListBuckets(ctx)
 	if err != nil {
 		t.Error(err)
 	}
 	t.Log("list buckets", "buckets: ", buckets)
-}
-
-func TestNewAdmin(t *testing.T) {
-	config := NewDefaultConfig()
-	admin, err := NewAdminClient(config)
-	if err != nil {
-		return
-	}
-	if err != nil {
-		t.Log("new admin", "err: ", err)
-	}
-	t.Log("new admin", "admin: ", admin)
-	admin.RemoveUser(context.Background(), "test_000_zncdata_11111111")
 }
 
 func TestListUser(t *testing.T) {

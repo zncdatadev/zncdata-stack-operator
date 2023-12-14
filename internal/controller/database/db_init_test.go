@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"github.com/zncdata-labs/zncdata-stack-operator/internal/util"
 	"os"
+	"strings"
 	"testing"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -10,21 +12,29 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var ()
+const (
+	DRIVER_POSTGRES = "postgres"
+	DRIVER_MYSQL    = "mysql"
+)
 
 func getPgDSN() *DSN {
-	return &DSN{
-		Driver:   "postgres",
-		Host:     os.Getenv("POSTGRES_HOST"),
-		Port:     "5432",
-		SSLMode:  false,
-		Username: "test",
-		Password: "test",
+	getenv := os.Getenv("ENV")
+	if getenv == "local" {
+		return getLocalPgDSN()
 	}
+	return getEnvDSN(DRIVER_POSTGRES)
 }
+func getMysqlDSN() *DSN {
+	getenv := os.Getenv("ENV")
+	if getenv == "local" {
+		return getLocalMysqlDSN()
+	}
+	return getEnvDSN(DRIVER_MYSQL)
+}
+
 func getLocalPgDSN() *DSN {
 	return &DSN{
-		Driver:   "postgres",
+		Driver:   DRIVER_POSTGRES,
 		Host:     "127.0.0.1",
 		Port:     "5432",
 		SSLMode:  false,
@@ -34,7 +44,7 @@ func getLocalPgDSN() *DSN {
 }
 func getLocalMysqlDSN() *DSN {
 	return &DSN{
-		Driver:   "mysql",
+		Driver:   DRIVER_MYSQL,
 		Host:     "127.0.0.1",
 		Port:     "3306",
 		SSLMode:  false,
@@ -43,7 +53,28 @@ func getLocalMysqlDSN() *DSN {
 		Database: "mysql",
 	}
 }
-func getEnvDSN() *DSN {
+func getEnvDSN(driverName string) *DSN {
+	switch driverName {
+	case DRIVER_POSTGRES:
+		return &DSN{
+			Driver:   DRIVER_POSTGRES,
+			Host:     os.Getenv("PG_DB_HOST"),
+			Port:     os.Getenv("PG_DB_PORT"),
+			SSLMode:  os.Getenv("PG_DB_SSLMODE") == "true",
+			Username: os.Getenv("PG_DB_USERNAME"),
+			Password: os.Getenv("PG_DB_PASSWORD"),
+		}
+	case DRIVER_MYSQL:
+		return &DSN{
+			Driver:   DRIVER_MYSQL,
+			Host:     os.Getenv("MYSQL_DB_HOST"),
+			Port:     os.Getenv("MYSQL_DB_PORT"),
+			SSLMode:  os.Getenv("MYSQL_DB_SSLMODE") == "true",
+			Username: os.Getenv("MYSQL_DB_USERNAME"),
+			Password: os.Getenv("MYSQL_DB_PASSWORD"),
+		}
+
+	}
 	return &DSN{
 		Driver:   os.Getenv("DB_DRIVER"),
 		Host:     os.Getenv("DB_HOST"),
@@ -86,15 +117,16 @@ func TestPostgresInitializer_initUser(t *testing.T) {
 }
 
 func Test_Postgres(t *testing.T) {
-	initializer, err := NewDBInitializer(getLocalPgDSN())
+	initializer, err := NewDBInitializer(getPgDSN())
 	if err != nil {
 		t.Error("new db initializer", "err: ", err)
 	}
 	t.Log("new db initializer", "initializer: ", initializer)
 
-	username := "test_user"
+	randomStr := strings.ToLower(util.GenerateRandomStr(4))
+	username := "test_user" + randomStr
 	password := "test_password"
-	dbname := "test_db"
+	dbname := "test_db" + randomStr
 
 	err = initializer.initUser(username, password)
 	if err != nil {
@@ -123,7 +155,7 @@ func Test_Postgres(t *testing.T) {
 }
 
 func Test_Mysql(t *testing.T) {
-	initializer, err := NewDBInitializer(getLocalMysqlDSN())
+	initializer, err := NewDBInitializer(getMysqlDSN())
 	if err != nil {
 		t.Error("new db initializer", "err: ", err)
 	}
