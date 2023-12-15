@@ -1,0 +1,14 @@
+apiVersion: stack.zncdata.net/v1alpha1
+kind: S3Bucket
+metadata:
+  labels:
+    app.kubernetes.io/name: s3bucket
+    app.kubernetes.io/instance: s3bucket-sample
+    app.kubernetes.io/part-of: zncdata-stack-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: zncdata-stack-operator
+  name: s3bucket-sample
+spec:
+  reference: s3connection-sample
+  name: "zhangsan"
+  # TODO(user): Add fields here

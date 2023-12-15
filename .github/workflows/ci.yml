@@ -1,0 +1,147 @@
+# 定义工作流的名称
+name: CI
+
+on:
+  workflow_dispatch: # 允许手动触发工作流
+  push: # 当有代码推送事件发生时
+    branches:
+      - '*' # 只有推送到 main 分支时才触发
+    tags:
+      - '*'
+  pull_request:
+
+
+# 定义工作流的任务
+jobs:
+  build:
+    name: Set up Build
+    runs-on: ubuntu-latest
+
+    # 定义任务中的步骤
+    steps:
+      # 检出代码。只检出最新的1次提交
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      # 设置 QEMU 模拟器，这通常用于多平台的 Docker 构建
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      # 设置 Docker Buildx，用于构建多平台的 Docker 镜像
+      - name: Set up Build
+        uses: docker/setup-buildx-action@v2
+      - run: |
+          ls -l
+
+  linting:
+    name: Lint Code Base
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          # Full git history is needed to get a proper list of changed files within `super-linter`
+          fetch-depth: 0
+      - name: Lint Code Base
+        uses: github/super-linter@v4
+        env:
+          VALIDATE_MARKDOWN: true
+          VALIDATE_ALL_CODEBASE: false
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          LINTER_RULES_PATH: /
+          MARKDOWN_CONFIG_FILE: .markdownlint.yml
+
+  go-test:
+    name: Go Test
+    runs-on: ubuntu-latest
+
+    # Service containers to run with `runner-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+
+      redis:
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps port 6379 on service container to the host
+          - 6379:6379
+
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_DATABASE: test_db
+          MYSQL_USER: mysql
+          MYSQL_PASSWORD: mysql
+          MYSQL_ROOT_PASSWORD: mysql
+        ports:
+          - 33306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+      minio:
+        # fixme: let's not depend on external unofficial image
+        image: bitnami/minio:latest
+        ports:
+          - 9000:9000
+          - 9090:9090
+        env:
+          MINIO_ROOT_USER: admin
+          MINIO_ROOT_PASSWORD: admin123456
+        options: --name=minio --health-cmd "curl http://localhost:9000/minio/health/live"
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          # Full git history is needed to get a proper list of changed files within `super-linter`
+          fetch-depth: 0
+      - name: Go Test
+        run: |
+          docker ps -a
+          go test -v ./...
+        env:
+          # The hostname used to communicate with the PostgreSQL service container
+          PG_DB_HOST: "localhost"
+          PG_DB_PORT: "5432"
+          PG_DB_SSLMODE: "false"
+          PG_DB_USERNAME: "postgres"
+          PG_DB_PASSWORD: "postgres"
+
+          # The hostname used to communicate with the Redis service container
+          REDIS_ADDR: "localhost:6379"
+
+          # The hostname used to communicate with the Mysql service container
+          MYSQL_DB_HOST: "localhost"
+          MYSQL_DB_PORT: "33306"
+          MYSQL_DB_SSLMODE: "false"
+          MYSQL_DB_USERNAME: "root"
+          MYSQL_DB_PASSWORD: "mysql"
+
+          # The hostname used to communicate with the Minio service container
+          MINIO_ENDPOINT: "localhost:9000"
+          MINIO_ACCESS_KEY: "admin"
+          MINIO_SECRET_KEY: "admin123456"
+          MINIO_SSL: "false"

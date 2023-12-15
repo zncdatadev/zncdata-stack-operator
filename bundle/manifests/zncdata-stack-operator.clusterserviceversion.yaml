@@ -1,0 +1,437 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: |-
+      [
+        {
+          "apiVersion": "stack.zncdata.net/v1alpha1",
+          "kind": "Database",
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/created-by": "zncdata-stack-operator",
+              "app.kubernetes.io/instance": "database-sample",
+              "app.kubernetes.io/managed-by": "kustomize",
+              "app.kubernetes.io/name": "database",
+              "app.kubernetes.io/part-of": "zncdata-stack-operator"
+            },
+            "name": "database-sample"
+          },
+          "spec": null
+        },
+        {
+          "apiVersion": "stack.zncdata.net/v1alpha1",
+          "kind": "DatabaseConnection",
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/created-by": "zncdata-stack-operator",
+              "app.kubernetes.io/instance": "databaseconnection-sample",
+              "app.kubernetes.io/managed-by": "kustomize",
+              "app.kubernetes.io/name": "databaseconnection",
+              "app.kubernetes.io/part-of": "zncdata-stack-operator"
+            },
+            "name": "databaseconnection-sample"
+          },
+          "spec": null
+        },
+        {
+          "apiVersion": "stack.zncdata.net/v1alpha1",
+          "kind": "RedisConnection",
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/created-by": "zncdata-stack-operator",
+              "app.kubernetes.io/instance": "redisconnection-sample",
+              "app.kubernetes.io/managed-by": "kustomize",
+              "app.kubernetes.io/name": "redisconnection",
+              "app.kubernetes.io/part-of": "zncdata-stack-operator"
+            },
+            "name": "redisconnection-sample"
+          },
+          "spec": null
+        },
+        {
+          "apiVersion": "stack.zncdata.net/v1alpha1",
+          "kind": "S3Bucket",
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/created-by": "zncdata-stack-operator",
+              "app.kubernetes.io/instance": "s3bucket-sample",
+              "app.kubernetes.io/managed-by": "kustomize",
+              "app.kubernetes.io/name": "s3bucket",
+              "app.kubernetes.io/part-of": "zncdata-stack-operator"
+            },
+            "name": "s3bucket-sample"
+          },
+          "spec": null
+        },
+        {
+          "apiVersion": "stack.zncdata.net/v1alpha1",
+          "kind": "S3Connection",
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/created-by": "zncdata-stack-operator",
+              "app.kubernetes.io/instance": "s3connection-sample",
+              "app.kubernetes.io/managed-by": "kustomize",
+              "app.kubernetes.io/name": "s3connection",
+              "app.kubernetes.io/part-of": "zncdata-stack-operator"
+            },
+            "name": "s3connection-sample"
+          },
+          "spec": null
+        }
+      ]
+    capabilities: Basic Install
+    createdAt: "2023-12-07T03:52:56Z"
+    operators.operatorframework.io/builder: operator-sdk-v1.32.0
+    operators.operatorframework.io/project_layout: go.kubebuilder.io/v4-alpha
+  name: zncdata-stack-operator.v0.0.1
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: DatabaseConnection is the Schema for the databaseconnections API
+      displayName: Database Connection
+      kind: DatabaseConnection
+      name: databaseconnections.stack.zncdata.net
+      version: v1alpha1
+    - description: Database is the Schema for the databases API
+      displayName: Database
+      kind: Database
+      name: databases.stack.zncdata.net
+      version: v1alpha1
+    - description: RedisConnection is the Schema for the redisconnections API
+      displayName: Redis Connection
+      kind: RedisConnection
+      name: redisconnections.stack.zncdata.net
+      version: v1alpha1
+    - description: S3Bucket is the Schema for the s3buckets API
+      displayName: S3 Bucket
+      kind: S3Bucket
+      name: s3buckets.stack.zncdata.net
+      version: v1alpha1
+    - description: S3Connection is the Schema for the s3connections API
+      displayName: S3 Connection
+      kind: S3Connection
+      name: s3connections.stack.zncdata.net
+      version: v1alpha1
+  description: provider some special resource to other operator
+  displayName: zncdata-stack-operator
+  icon:
+  - base64data: ""
+    mediatype: ""
+  install:
+    spec:
+      clusterPermissions:
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - secrets
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - stack.zncdata.net
+          resources:
+          - databaseconnections
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - stack.zncdata.net
+          resources:
+          - databaseconnections/finalizers
+          verbs:
+          - update
+        - apiGroups:
+          - stack.zncdata.net
+          resources:
+          - databaseconnections/status
+          verbs:
+          - get
+          - patch
+          - update
+        - apiGroups:
+          - stack.zncdata.net
+          resources:
+          - databases
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - stack.zncdata.net
+          resources:
+          - databases/finalizers
+          verbs:
+          - update
+        - apiGroups:
+          - stack.zncdata.net
+          resources:
+          - databases/status
+          verbs:
+          - get
+          - patch
+          - update
+        - apiGroups:
+          - stack.zncdata.net
+          resources:
+          - redisconnections
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - stack.zncdata.net
+          resources:
+          - redisconnections/finalizers
+          verbs:
+          - update
+        - apiGroups:
+          - stack.zncdata.net
+          resources:
+          - redisconnections/status
+          verbs:
+          - get
+          - patch
+          - update
+        - apiGroups:
+          - stack.zncdata.net
+          resources:
+          - s3buckets
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - stack.zncdata.net
+          resources:
+          - s3buckets/finalizers
+          verbs:
+          - update
+        - apiGroups:
+          - stack.zncdata.net
+          resources:
+          - s3buckets/status
+          verbs:
+          - get
+          - patch
+          - update
+        - apiGroups:
+          - stack.zncdata.net
+          resources:
+          - s3connections
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - stack.zncdata.net
+          resources:
+          - s3connections/finalizers
+          verbs:
+          - update
+        - apiGroups:
+          - stack.zncdata.net
+          resources:
+          - s3connections/status
+          verbs:
+          - get
+          - patch
+          - update
+        - apiGroups:
+          - authentication.k8s.io
+          resources:
+          - tokenreviews
+          verbs:
+          - create
+        - apiGroups:
+          - authorization.k8s.io
+          resources:
+          - subjectaccessreviews
+          verbs:
+          - create
+        serviceAccountName: zncdata-stack-operator-controller-manager
+      deployments:
+      - label:
+          app.kubernetes.io/component: manager
+          app.kubernetes.io/created-by: zncdata-stack-operator
+          app.kubernetes.io/instance: controller-manager
+          app.kubernetes.io/managed-by: kustomize
+          app.kubernetes.io/name: deployment
+          app.kubernetes.io/part-of: zncdata-stack-operator
+          control-plane: controller-manager
+        name: zncdata-stack-operator-controller-manager
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              control-plane: controller-manager
+          strategy: {}
+          template:
+            metadata:
+              annotations:
+                kubectl.kubernetes.io/default-container: manager
+              labels:
+                control-plane: controller-manager
+            spec:
+              affinity:
+                nodeAffinity:
+                  requiredDuringSchedulingIgnoredDuringExecution:
+                    nodeSelectorTerms:
+                    - matchExpressions:
+                      - key: kubernetes.io/arch
+                        operator: In
+                        values:
+                        - amd64
+                        - arm64
+                        - ppc64le
+                        - s390x
+                      - key: kubernetes.io/os
+                        operator: In
+                        values:
+                        - linux
+              containers:
+              - args:
+                - --secure-listen-address=0.0.0.0:8443
+                - --upstream=http://127.0.0.1:8080/
+                - --logtostderr=true
+                - --v=0
+                image: gcr.io/kubebuilder/kube-rbac-proxy:v0.13.1
+                name: kube-rbac-proxy
+                ports:
+                - containerPort: 8443
+                  name: https
+                  protocol: TCP
+                resources:
+                  limits:
+                    cpu: 500m
+                    memory: 128Mi
+                  requests:
+                    cpu: 5m
+                    memory: 64Mi
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  capabilities:
+                    drop:
+                    - ALL
+              - args:
+                - --health-probe-bind-address=:8081
+                - --metrics-bind-address=127.0.0.1:8080
+                - --leader-elect
+                command:
+                - /manager
+                image: controller:latest
+                livenessProbe:
+                  httpGet:
+                    path: /healthz
+                    port: 8081
+                  initialDelaySeconds: 15
+                  periodSeconds: 20
+                name: manager
+                readinessProbe:
+                  httpGet:
+                    path: /readyz
+                    port: 8081
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                resources:
+                  limits:
+                    cpu: 500m
+                    memory: 128Mi
+                  requests:
+                    cpu: 10m
+                    memory: 64Mi
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  capabilities:
+                    drop:
+                    - ALL
+              securityContext:
+                runAsNonRoot: true
+              serviceAccountName: zncdata-stack-operator-controller-manager
+              terminationGracePeriodSeconds: 10
+      permissions:
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - configmaps
+          verbs:
+          - get
+          - list
+          - watch
+          - create
+          - update
+          - patch
+          - delete
+        - apiGroups:
+          - coordination.k8s.io
+          resources:
+          - leases
+          verbs:
+          - get
+          - list
+          - watch
+          - create
+          - update
+          - patch
+          - delete
+        - apiGroups:
+          - ""
+          resources:
+          - events
+          verbs:
+          - create
+          - patch
+        serviceAccountName: zncdata-stack-operator-controller-manager
+    strategy: deployment
+  installModes:
+  - supported: false
+    type: OwnNamespace
+  - supported: false
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - base
+  - s3
+  - database
+  - redis
+  - authentik
+  links:
+  - name: Zncdata Stack Operator
+    url: https://zncdata-stack-operator.domain
+  maturity: alpha
+  provider:
+    name: zncdata.net
+  version: 0.0.1

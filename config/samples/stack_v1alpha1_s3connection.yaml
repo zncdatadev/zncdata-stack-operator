@@ -1,0 +1,16 @@
+apiVersion: stack.zncdata.net/v1alpha1
+kind: S3Connection
+metadata:
+  labels:
+    app.kubernetes.io/name: s3connection
+    app.kubernetes.io/instance: s3connection-sample
+    app.kubernetes.io/part-of: zncdata-stack-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: zncdata-stack-operator
+  name: s3connection-sample
+spec:
+  credential:
+    accessKey: admin
+    secretKey: admin123456
+    endpoint: 127.0.0.1:9000
+    ssl: false

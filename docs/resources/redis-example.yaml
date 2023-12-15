@@ -4,16 +4,16 @@ spec:
   redis:
     host:
     port:
-    credential:
-      existingSecret: "foo"
+#    credential:
+#      existingSecret: "foo"
 
 ---
 Kind: Foo
 name: foo-yyy
 spec:
   redis:
-    name: "redis-xxx"
-    provider: "redis-provider-xxx"
+#    name: "redis-xxx"
+#    provider: "redis-provider-xxx"
 
 
 ---
@@ -25,10 +25,10 @@ spec:
   credential:
     existingSecret: "foo"
 
----
-Kind: Redis
-name: redis-xxx
-spec:
-  provider: "redis-provider-xxx"
-  credential:
-    existingSecret: "foo"
+#---
+#Kind: Redis
+#name: redis-xxx
+#spec:
+#  provider: "redis-provider-xxx"
+#  credential:
+#    existingSecret: "foo"

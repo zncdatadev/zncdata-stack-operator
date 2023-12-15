@@ -7,6 +7,15 @@ metadata:
     app.kubernetes.io/part-of: zncdata-stack-operator
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: zncdata-stack-operator
-  name: databaseconnection-sample
+  name: databaseconnection-sample-mysql
 spec:
+  default: true
+  provider:
+    driver: mysql
+    host: localhost
+    port: 3306
+    ssl: false
+    credential:
+        username: root
+        password: "123456"
   # TODO(user): Add fields here

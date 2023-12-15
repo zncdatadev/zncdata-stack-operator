@@ -35,15 +35,13 @@ spec:
           spec:
             description: DatabaseConnectionSpec defines the desired state of DatabaseConnection
             properties:
+              default:
+                type: boolean
               provider:
                 properties:
                   credential:
                     properties:
-                      existSecret:
-                        type: string
-                      password:
-                        type: string
-                      username:
+                      existingSecret:
                         type: string
                     type: object
                   driver:

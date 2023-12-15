@@ -4,12 +4,15 @@ metadata:
 spec:
   database:
     name: "hive_test" # db name in database
+    db_name: ""
     connection:
       driver: postgres
       host:
       port:
       credential:
         existingSecret: "foo"
+        username:
+        password:
 
 ---
 kind: HiveMetastore
@@ -34,7 +37,7 @@ kind: DatabaseConnection
 metadata:
   name: pg-db-provider-xxx
 spec:
-  privider:
+  provider:
     driver: postgres
     host:
     port:
@@ -50,3 +53,6 @@ spec:
   reference: "pg-db-provider-xxx"
   credential:
     existingSecret: "foo"
+    username:
+    password:
+

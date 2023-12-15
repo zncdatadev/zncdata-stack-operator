@@ -34,22 +34,9 @@ spec:
           spec:
             description: DatabaseSpec defines the desired state of Database
             properties:
-              connection:
-                properties:
-                  driver:
-                    type: string
-                  host:
-                    type: string
-                  port:
-                    type: integer
-                  reference:
-                    type: string
-                  ssl:
-                    type: boolean
-                type: object
               credential:
                 properties:
-                  existSecret:
+                  existingSecret:
                     type: string
                   password:
                     type: string
@@ -57,6 +44,8 @@ spec:
                     type: string
                 type: object
               name:
+                type: string
+              reference:
                 type: string
             type: object
           status:

@@ -1,0 +1,68 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: '[]'
+    capabilities: Basic Install
+  name: zncdata-stack-operator.v0.0.0
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: DatabaseConnection is the Schema for the databaseconnections API
+      displayName: Database Connection
+      kind: DatabaseConnection
+      name: databaseconnections.stack.zncdata.net
+      version: v1alpha1
+    - description: Database is the Schema for the databases API
+      displayName: Database
+      kind: Database
+      name: databases.stack.zncdata.net
+      version: v1alpha1
+    - description: RedisConnection is the Schema for the redisconnections API
+      displayName: Redis Connection
+      kind: RedisConnection
+      name: redisconnections.stack.zncdata.net
+      version: v1alpha1
+    - description: S3Bucket is the Schema for the s3buckets API
+      displayName: S3 Bucket
+      kind: S3Bucket
+      name: s3buckets.stack.zncdata.net
+      version: v1alpha1
+    - description: S3Connection is the Schema for the s3connections API
+      displayName: S3 Connection
+      kind: S3Connection
+      name: s3connections.stack.zncdata.net
+      version: v1alpha1
+  description: provider some special resource to other operator
+  displayName: zncdata-stack-operator
+  icon:
+  - base64data: ""
+    mediatype: ""
+  install:
+    spec:
+      deployments: null
+    strategy: ""
+  installModes:
+  - supported: false
+    type: OwnNamespace
+  - supported: false
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - base
+  - s3
+  - database
+  - redis
+  - authentik
+  links:
+  - name: Zncdata Stack Operator
+    url: https://zncdata-stack-operator.domain
+  maturity: alpha
+  provider:
+    name: zncdata.net
+  version: 0.0.0

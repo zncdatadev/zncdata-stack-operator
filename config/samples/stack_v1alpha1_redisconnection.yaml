@@ -1,0 +1,12 @@
+apiVersion: stack.zncdata.net/v1alpha1
+kind: RedisConnection
+metadata:
+  labels:
+    app.kubernetes.io/name: redisconnection
+    app.kubernetes.io/instance: redisconnection-sample
+    app.kubernetes.io/part-of: zncdata-stack-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: zncdata-stack-operator
+  name: redisconnection-sample
+spec:
+  # TODO(user): Add fields here
